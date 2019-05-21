@@ -1,17 +1,38 @@
 #ifndef ErrorFaceLib_h
 #define ErrorFaceLib_h
 
-#include "Error.h"
-#include "iface.h"
 
-class ErrorFaceLib: public Error
+#include "iface.h"
+#include "rx.hpp"
+#include "Codes.h"
+#include "Either.h"
+
+namespace Rx {
+	using namespace rxcpp;
+	using namespace rxcpp::subjects;
+	using namespace rxcpp::operators;
+	using namespace rxcpp::util;
+
+}
+
+class ErrorFaceLib
 {
 public:
 	ErrorFaceLib();
 	~ErrorFaceLib();
+	enum ErrorWeight
+	{
+		gross = GROSS_ERROR,
+		medium = MEDIUM_ERROR,
+		less = LESS_ERROR,
+		none = PROCESS_OK
+	};
+	Rx::subject<Either*> errorSubject;
+	Rx::observable<Either*> observableError = errorSubject.get_observable();
 	void CheckError(int errorCode, ErrorWeight errorWeight = ErrorWeight::none, string message = "");
 
 private:
+	Rx::subscriber<Either*> shootError = errorSubject.get_subscriber();
 	void BuildMessageErrorLicense(int errorCode, ErrorWeight errorWeight);
 	void BuildMessageOtherError(int errorCode, ErrorWeight errorWeight);
 	void BuildMessageOk();

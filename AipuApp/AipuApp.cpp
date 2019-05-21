@@ -27,11 +27,28 @@ void ReadConfiguration() {
 	cout << management->GetStringJSONVideo() << endl;
 	cout << management->GetStringJSONFaceModel() << endl;
 }
+
+void SetDirectoryWork() {
+	Management* management = new Management();
+	management->SetNameDirectoryWorkTemporal("camera1");
+}
+
+void InitTrain() {
+	Management* management = new Management();
+	management->SetNameDirectoryTraining("train1");
+	/*cin.clear();
+	cout << endl << "Press any key to continue...";
+	cin.ignore();*/
+}
+
 int main()
 {	
 	//WriteConfiguration();
-	ReadConfiguration();
-    std::cout << "Hello World!\n"; 
+	//ReadConfiguration();
+	//SetDirectoryWork();
+	InitTrain();
+	
+    std::cout << "Verify Work!\n"; 
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

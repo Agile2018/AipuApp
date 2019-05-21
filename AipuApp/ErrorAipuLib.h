@@ -1,21 +1,41 @@
 #ifndef ErrorAipuLib_h
 #define ErrorAipuLib_h
 
-#include "Error.h"
+//#include "Error.h"
 #include <iostream>  
 #include <string>
+#include "rx.hpp"
+#include "Codes.h"
+#include "Either.h"
 
+namespace Rx {
+	using namespace rxcpp;
+	using namespace rxcpp::subjects;
+	using namespace rxcpp::operators;
+	using namespace rxcpp::util;
+
+}
 using namespace std;
 
-class ErrorAipuLib: public Error
+class ErrorAipuLib
 {
 public:
 	ErrorAipuLib();
 	~ErrorAipuLib();
-	void CheckError(int errorCode, ErrorWeight errorWeight = ErrorWeight::none,
-		string message = "");
+	enum ErrorWeight
+	{
+		gross = GROSS_ERROR,
+		medium = MEDIUM_ERROR,
+		less = LESS_ERROR,
+		none = PROCESS_OK
+	};
+	Rx::subject<Either*> errorSubject;
+	Rx::observable<Either*> observableError = errorSubject.get_observable();
+	void CheckError(int errorCode, ErrorWeight errorWeight,
+		string message);
 private:
-
+	Rx::subscriber<Either*> shootError = errorSubject.get_subscriber();
+	
 };
 
 

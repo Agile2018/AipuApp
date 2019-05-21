@@ -9,7 +9,9 @@ ErrorAipuLib::~ErrorAipuLib()
 }
 
 void ErrorAipuLib::CheckError(int errorCode, ErrorWeight errorWeight,
-	string message) {
+	string message) {	
+	
+	Either* either = new Either();
 	message += ", Code: " + to_string(errorCode);
 	either->Clear();
 	either->SetCode(errorWeight);

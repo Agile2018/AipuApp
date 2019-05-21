@@ -82,7 +82,7 @@ bool FlowTrend::LoadDataOfFile(string nameFile) {
 			return true;
 		}
 		else
-		{
+		{			
 			error->CheckError(ERROR_MACHINE_LEARNING,
 				error->medium, LABEL_ERROR_NOT_FILE_ML);
 		}
@@ -90,6 +90,7 @@ bool FlowTrend::LoadDataOfFile(string nameFile) {
 	}
 	catch (const std::exception& e)
 	{
+		
 		error->CheckError(ERROR_MACHINE_LEARNING,
 			error->medium, e.what());
 	}
@@ -115,6 +116,7 @@ void FlowTrend::NormalEquations() {
 }
 
 void FlowTrend::RefreshData(string nameFile) {
+	
 	if (LoadDataOfFile(nameFile)) {
 		LoadMatrix();
 		NormalEquations();
@@ -123,13 +125,14 @@ void FlowTrend::RefreshData(string nameFile) {
 }
 
 void FlowTrend::UpdateTrendByHour() {
+	
 	std::time_t rawtime = std::time(nullptr);
-	struct tm *timeinfo = NULL;
+	struct tm *timeinfo;
 	//tm *ltm = std::localtime(&rawtime);
 	localtime_s(timeinfo, &rawtime);
 	int hour = timeinfo->tm_hour;
 	int day = timeinfo->tm_wday;
-
+	
 	if (hourNow < hour)
 	{
 		hourNow = hour;

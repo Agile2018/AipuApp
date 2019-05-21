@@ -23,6 +23,7 @@ void Management::ObserverError() {
 	});
 
 	auto subscriptionFaceModelError = faceModelError.subscribe([this](Either* either) {		
+		cout << either->GetLabel() << endl;
 		shootError.on_next(either);
 	});
 
@@ -31,6 +32,7 @@ void Management::ObserverError() {
 	});
 
 	auto subscriptionConfigurationFaceModelError = configurationFaceModelError.subscribe([this](Either* either) {
+		cout << either->GetLabel() << endl;
 		shootError.on_next(either);
 
 	});
@@ -40,6 +42,7 @@ void Management::ObserverError() {
 	});
 
 	auto subscriptionVideoError = videoError.subscribe([this](Either* either) {
+		cout << either->GetLabel() << endl;
 		shootError.on_next(either);
 	});
 
@@ -48,16 +51,18 @@ void Management::ObserverError() {
 	});
 
 	auto subscriptionConfigurationVideoError = configurationVideoError.subscribe([this](Either* either) {
+		cout << either->GetLabel() << endl;
 		shootError.on_next(either);
 
 	});
 
-	auto flowTrendError = flowTrend->error->observableError.map([](Either* either) {
+	auto flowTrendError = flowTrend->error->observableError.map([](Either* either) {		
 		return either;
 	});
 
 	auto subscriptionFlowTrendError = flowTrendError.subscribe([this](Either* either) {
-		shootError.on_next(either);
+		cout << either->GetLabel() << endl;
+		//shootError.on_next(either);
 	});
 
 
@@ -65,7 +70,7 @@ void Management::ObserverError() {
 
 void Management::SaveDataTraining(int quantityDetected) {
 	std::time_t rawtime = std::time(nullptr);
-	struct tm *timeinfo = NULL;
+	struct tm *timeinfo;
 	localtime_s(timeinfo, &rawtime);
 	int hour = timeinfo->tm_hour;
 	int day = timeinfo->tm_wday;

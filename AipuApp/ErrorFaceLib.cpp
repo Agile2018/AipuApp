@@ -11,7 +11,7 @@ ErrorFaceLib::~ErrorFaceLib()
 void ErrorFaceLib::BuildMessageErrorLicense(int errorCode, ErrorWeight errorWeight) {
 	int hwIdLen = BUFFER_LENGTH;
 	char hwId[BUFFER_LENGTH];
-
+	Either* either = new Either();
 	IFACE_GetHardwareId(hwId, &hwIdLen);
 	char msg[CHAR_LENGTH];
 	sprintf_s(msg, "Your license is invalid or not present, \nplease contact support for license with this HwId %s\n", hwId);
@@ -27,6 +27,8 @@ void ErrorFaceLib::BuildMessageOtherError(int errorCode, ErrorWeight errorWeight
 	char errorBuffer[errorBufferLength];
 	char msg[CHAR_LENGTH];
 	string msgError;
+	Either* either = new Either();
+
 	int getErrorMsgErrorCode = IFACE_GetErrorMessage(errorCode,
 		errorBufferLength, errorBuffer);
 	if (getErrorMsgErrorCode == IFACE_OK)
@@ -45,6 +47,7 @@ void ErrorFaceLib::BuildMessageOtherError(int errorCode, ErrorWeight errorWeight
 
 }
 void ErrorFaceLib::BuildMessageOk() {
+	Either* either = new Either();
 	either->SetCode(ErrorWeight::none);
 	either->SetLabel("OK");
 	shootError.on_next(either);
@@ -53,8 +56,7 @@ void ErrorFaceLib::BuildMessageOk() {
 
 void ErrorFaceLib::CheckError(int errorCode, ErrorWeight errorWeight,
 	string message) {
-	either->Clear();
-
+	
 	switch (errorCode)
 	{
 	case IFACE_OK:

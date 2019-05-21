@@ -71,9 +71,6 @@
     <ClInclude Include="Either.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Error.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ErrorFaceLib.h">
       <Filter>Header Files</Filter>
     </ClInclude>

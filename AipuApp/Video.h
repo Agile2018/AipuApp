@@ -18,7 +18,10 @@ public:
 	void WriteBatchOfImagesOnDisk(Mat frame);
 	void SetNameDirectory(string name) {
 		nameDirectory = name;
+		manageFile->SetNameDirectory(name);
+		manageFile->CreateDirectory();
 	}
+
 	void ResetCountProcessedImages() {
 		processedImages = 0;
 	}
@@ -32,6 +35,7 @@ public:
 	Rx::subject<Mat> frameImage;
 	Rx::observable<Mat> observableImage = frameImage.get_observable();
 private:
+	File* manageFile = new File();
 	Rx::subscriber<Mat> frameout = frameImage.get_subscriber();
 	void CheckFramesBySecond(VideoCapture videoCapture);
 	int batchTotalSize = BATCH_TOTAL_SIZE;
