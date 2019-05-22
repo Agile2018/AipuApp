@@ -39,7 +39,7 @@ void ConfigurationIFace::ParseJSONToObject() {
 		SetValueJSONToConfiguration();
 	}
 	else {
-		error->CheckError(ERROR_PARSING, error->medium, LABEL_ERROR_PARSING);
+		error->CheckError(ERROR_PARSING, error->medium);
 	}
 
 }

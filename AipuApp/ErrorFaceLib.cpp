@@ -49,13 +49,12 @@ void ErrorFaceLib::BuildMessageOtherError(int errorCode, ErrorWeight errorWeight
 void ErrorFaceLib::BuildMessageOk() {
 	Either* either = new Either();
 	either->SetCode(ErrorWeight::none);
-	either->SetLabel("OK");
+	either->SetLabel("OK");	
 	shootError.on_next(either);
 
 }
 
-void ErrorFaceLib::CheckError(int errorCode, ErrorWeight errorWeight,
-	string message) {
+void ErrorFaceLib::CheckError(int errorCode, ErrorWeight errorWeight) {
 	
 	switch (errorCode)
 	{

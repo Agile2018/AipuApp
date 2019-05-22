@@ -56,13 +56,12 @@ void Management::ObserverError() {
 
 	});
 
-	auto flowTrendError = flowTrend->error->observableError.map([](Either* either) {		
+	auto flowTrendError = flowTrend->observableError.map([](Either* either) {		
 		return either;
 	});
 
-	auto subscriptionFlowTrendError = flowTrendError.subscribe([this](Either* either) {
-		cout << either->GetLabel() << endl;
-		//shootError.on_next(either);
+	auto subscriptionFlowTrendError = flowTrendError.subscribe([this](Either* either) {		
+		shootError.on_next(either);
 	});
 
 
@@ -207,5 +206,6 @@ void Management::ObserverVideo() {
 }
 
 void Management::RunVideo() {
+	flowTrend->Init();
 	video->RunVideo();
 }

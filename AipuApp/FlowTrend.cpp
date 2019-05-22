@@ -2,10 +2,21 @@
 
 FlowTrend::FlowTrend()
 {
+	ObserverError();
 }
 
 FlowTrend::~FlowTrend()
 {
+}
+
+void FlowTrend::ObserverError() {
+	auto observerError = error->observableError.map([](Either* either) {
+		return either;
+	});
+
+	auto subscriptionError = observerError.subscribe([this](Either* either) {					
+		shootError.on_next(either);
+	});
 }
 
 void FlowTrend::Split(const string& source, char separator,

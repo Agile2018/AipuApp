@@ -7,6 +7,7 @@
 #include "Codes.h"
 #include "Either.h"
 
+
 namespace Rx {
 	using namespace rxcpp;
 	using namespace rxcpp::subjects;
@@ -29,7 +30,7 @@ public:
 	};
 	Rx::subject<Either*> errorSubject;
 	Rx::observable<Either*> observableError = errorSubject.get_observable();
-	void CheckError(int errorCode, ErrorWeight errorWeight = ErrorWeight::none, string message = "");
+	void CheckError(int errorCode, ErrorWeight errorWeight);
 
 private:
 	Rx::subscriber<Either*> shootError = errorSubject.get_subscriber();

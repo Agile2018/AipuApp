@@ -1,9 +1,6 @@
-// AipuApp.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
-//#include "pch.h"
 #include <iostream>
 #include "Management.h"
+#include "Innovatrics.h"
 
 void WriteConfiguration() {
 	Management* management = new Management();
@@ -35,10 +32,32 @@ void SetDirectoryWork() {
 
 void InitTrain() {
 	Management* management = new Management();
+	auto observerError = management->observableError.map([](Either* either) {
+		return either;
+	});
+
+	auto subscriptionError = observerError.subscribe([](Either* either) {
+		cout << either->GetLabel() << endl;
+		string s = either->GetLabel();
+		const char *cstr = s.c_str();
+		printf("%s \n", cstr);
+
+	});
 	management->SetNameDirectoryTraining("train1");
-	/*cin.clear();
-	cout << endl << "Press any key to continue...";
-	cin.ignore();*/
+}
+
+void InitInnovatricsLibrary() {
+	Innovatrics* innovatrics = new Innovatrics();
+	
+	auto observerError = innovatrics->observableError.map([](Either* either){
+		return either;
+	});
+
+	auto subscriptionError = observerError.subscribe([](Either* either) {
+		cout << either->GetLabel() << endl;
+	});
+	innovatrics->SetParamsLibrary();
+	innovatrics->InitLibrary();
 }
 
 int main()
@@ -47,17 +66,12 @@ int main()
 	//ReadConfiguration();
 	//SetDirectoryWork();
 	InitTrain();
+	//InitInnovatricsLibrary();
+	
 	
     std::cout << "Verify Work!\n"; 
+	cin.clear();
+	cout << endl << "Press any key to continue...";
+	cin.ignore();
+
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file

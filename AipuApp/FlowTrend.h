@@ -24,8 +24,11 @@ public:
 	}
 	void Init();
 	int GetFlowTrendForMinute(int minute);
-	ErrorAipuLib* error = new ErrorAipuLib();
+	Rx::subject<Either*> errorSubject;
+	Rx::observable<Either*> observableError = errorSubject.get_observable();
 private:
+	Rx::subscriber<Either*> shootError = errorSubject.get_subscriber();
+	ErrorAipuLib* error = new ErrorAipuLib();
 	void Split(const string& source, char separator,
 		vector<string>& pieces);
 	void LoadMatrix();
@@ -33,6 +36,7 @@ private:
 	void NormalEquations();
 	void RefreshData(string nameFile);
 	void UpdateTrendByHour();
+	void ObserverError();
 	vector<int> quantityDetected;
 	vector<int> dayOfDetected;
 	vector<int> minuteOfDetected;

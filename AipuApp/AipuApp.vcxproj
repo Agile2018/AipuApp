@@ -173,6 +173,7 @@
     <ClCompile Include="FlowTrend.cpp" />
     <ClCompile Include="Format.cpp" />
     <ClCompile Include="GraphicProcessor.cpp" />
+    <ClCompile Include="Innovatrics.cpp" />
     <ClCompile Include="Management.cpp" />
     <ClCompile Include="Molded.cpp" />
     <ClCompile Include="Movement.cpp" />
@@ -193,6 +194,7 @@
     <ClInclude Include="FlowTrend.h" />
     <ClInclude Include="Format.h" />
     <ClInclude Include="GraphicProcessor.h" />
+    <ClInclude Include="Innovatrics.h" />
     <ClInclude Include="LabelError.h" />
     <ClInclude Include="Management.h" />
     <ClInclude Include="Molded.h" />
