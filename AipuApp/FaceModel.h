@@ -26,11 +26,15 @@ public:
 	void Terminate();
 	int ModelByBatch();
 	int ModelOneToOne();
-	ErrorFaceLib* error = new ErrorFaceLib();
+	
 	ConfigurationIFace* configuration = new ConfigurationIFace();
 	Rx::subject<Molded*> templateImage;
 	Rx::observable<Molded*> observableTemplate = templateImage.get_observable();
+	Rx::subject<Either*> errorSubject;
+	Rx::observable<Either*> observableError = errorSubject.get_observable();
 private:
+	ErrorFaceLib* error = new ErrorFaceLib();
+	Rx::subscriber<Either*> shootError = errorSubject.get_subscriber();
 	int batchTotalSize = BATCH_TOTAL_SIZE;
 	int processedImages = 0;
 	string nameFileImage;
@@ -40,6 +44,7 @@ private:
 	void GetBatchModels(int countFacesDetected, void* facesDetected[BATCH_SIZE]);
 	void CreateTemplate(void* face);
 	int GetOneModel(unsigned char* rawImage, int width, int height);
+	void ObserverError();
 };
 
 

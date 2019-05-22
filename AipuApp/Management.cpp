@@ -5,6 +5,7 @@ Management::Management()
 	SetDirectoryConfiguration();
 	ObserverError();
 	ObserverVideo();	
+	ObserverTemplateImage();
 }
 
 Management::~Management()
@@ -14,46 +15,41 @@ Management::~Management()
 void Management::SetDirectoryConfiguration() {
 	faceModel->configuration->SetNameDirectory(DIRECTORY_CONFIGURATION);
 	video->configuration->SetNameDirectory(DIRECTORY_CONFIGURATION);
+	configurationFile->SetNameDirectory(DIRECTORY_CONFIGURATION);
+}
+
+void Management::ObserverTemplateImage()
+{
+	auto templateObservable = faceModel->observableTemplate.map([](Molded* modelImage) {
+		return modelImage;
+	});
+
+	auto subscriptionTemplate = templateObservable.subscribe([this](Molded* modelImage) {
+		//std::thread(&ASSCentralProcessingVideo::Identify, this, modelImage).detach();
+
+	});
 }
 
 void Management::ObserverError() {
 
-	auto faceModelError = faceModel->error->observableError.map([](Either* either) {
+	auto faceModelError = faceModel->observableError.map([](Either* either) {
 		return either;
 	});
 
-	auto subscriptionFaceModelError = faceModelError.subscribe([this](Either* either) {		
-		cout << either->GetLabel() << endl;
-		shootError.on_next(either);
+	auto subscriptionFaceModelError = faceModelError.subscribe([this](Either* either) {	
+		if (either->GetLabel() != "OK")
+		{
+			shootError.on_next(either);
+		}
+		
 	});
 
-	auto configurationFaceModelError = faceModel->configuration->error->observableError.map([](Either* either) {
+	auto videoError = video->observableError.map([](Either* either) {
 		return either;
 	});
 
-	auto subscriptionConfigurationFaceModelError = configurationFaceModelError.subscribe([this](Either* either) {
-		cout << either->GetLabel() << endl;
+	auto subscriptionVideoError = videoError.subscribe([this](Either* either) {		
 		shootError.on_next(either);
-
-	});
-
-	auto videoError = video->error->observableError.map([](Either* either) {
-		return either;
-	});
-
-	auto subscriptionVideoError = videoError.subscribe([this](Either* either) {
-		cout << either->GetLabel() << endl;
-		shootError.on_next(either);
-	});
-
-	auto configurationVideoError = video->configuration->error->observableError.map([](Either* either) {
-		return either;
-	});
-
-	auto subscriptionConfigurationVideoError = configurationVideoError.subscribe([this](Either* either) {
-		cout << either->GetLabel() << endl;
-		shootError.on_next(either);
-
 	});
 
 	auto flowTrendError = flowTrend->observableError.map([](Either* either) {		
@@ -64,18 +60,19 @@ void Management::ObserverError() {
 		shootError.on_next(either);
 	});
 
+	auto configurationFileError = configurationFile->observableError.map([](Either* either) {
+		return either;
+	});
+
+	auto subscriptionConfigurationFileError = configurationFileError.subscribe([this](Either* either) {
+		shootError.on_next(either);
+	});
 
 }
 
-void Management::SaveDataTraining(int quantityDetected) {
-	std::time_t rawtime = std::time(nullptr);
-	struct tm *timeinfo;
-	localtime_s(timeinfo, &rawtime);
-	int hour = timeinfo->tm_hour;
-	int day = timeinfo->tm_wday;
-	int min = (hour * SIXTY_MINUTES) + timeinfo->tm_min;
-	string fileName = to_string(day) + "-" + to_string(hour) + ".txt";
-	train->SetMinute(min);
+void Management::SaveDataTraining(int quantityDetected, int day, int hour, int minute) {	
+	string fileName = to_string(day) + "-" + to_string(hour) + ".txt";	
+	train->SetMinute(minute);
 	train->SetQuantityOfImages(quantityDetected);
 	train->WriteDataTraining(fileName);
 
@@ -85,25 +82,25 @@ void Management::VerifyTrainingLapse() {
 	std::chrono::steady_clock::time_point endCountTime = std::chrono::steady_clock::now();
 	int diff = std::chrono::duration_cast<std::chrono::minutes>(endCountTime - startCountTime).count();
 	if (diff >= ONE_MINUTE)
-	{
-		std::thread(&Management::SaveDataTraining, this,
-			countImagesDetected).detach();
-		startCountTime = std::chrono::steady_clock::now();
-		countImagesDetected = 0;
-		std::time_t rawtime = std::time(nullptr);
-		struct tm *timeinfo;
-		localtime_s(timeinfo, &rawtime);
+	{		
+		std::time_t rawtime = std::time(nullptr);		
+		tm *timeinfo = std::localtime(&rawtime);
+		int day = timeinfo->tm_wday;
 		int hour = timeinfo->tm_hour;
 		int min = (hour * SIXTY_MINUTES) + timeinfo->tm_min;
-
+		std::thread(&Management::SaveDataTraining, this,
+			countImagesDetected, day, hour, min).detach();
+		startCountTime = std::chrono::steady_clock::now();
+		countImagesDetected = 0;		
 		workMode = SetStateFlow(min + ONE_MINUTE);
 
 	}
 
 }
 
-int Management::SetStateFlow(int minute) {
+int Management::SetStateFlow(int minute) {	
 	int valueTrend = flowTrend->GetFlowTrendForMinute(minute);
+	cout << "VALUE TREND: " << valueTrend << endl;
 	video->ResetCountProcessedImages();
 	faceModel->ResetCountProcessedImages();
 	
@@ -201,7 +198,7 @@ void Management::ObserverVideo() {
 			squ.detach();
 
 		}		
-		//frameOut.on_next(p);
+		frameOut.on_next(image);
 	});
 }
 

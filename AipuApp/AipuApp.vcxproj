@@ -163,6 +163,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AipuApp.cpp" />
+    <ClCompile Include="ConfigurationFile.cpp" />
     <ClCompile Include="ConfigurationIFace.cpp" />
     <ClCompile Include="ConfigurationVideo.cpp" />
     <ClCompile Include="Either.cpp" />
@@ -183,6 +184,7 @@
   <ItemGroup>
     <ClInclude Include="Codes.h" />
     <ClInclude Include="Configuration.h" />
+    <ClInclude Include="ConfigurationFile.h" />
     <ClInclude Include="ConfigurationIFace.h" />
     <ClInclude Include="ConfigurationVideo.h" />
     <ClInclude Include="Either.h" />

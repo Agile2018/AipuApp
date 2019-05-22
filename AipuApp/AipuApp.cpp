@@ -4,6 +4,14 @@
 
 void WriteConfiguration() {
 	Management* management = new Management();
+	auto observerError = management->observableError.map([](Either* either) {
+		return either;
+	});
+
+	auto subscriptionError = observerError.subscribe([](Either* either) {
+		cout << either->GetLabel() << endl;		
+
+	});
 	management->SetPathVideo("rtsp://192.168.0.8:554");
 	management->SetFPSVideo("30");
 	management->SetImageTempVideo("imgtemp1.png");
@@ -15,37 +23,54 @@ void WriteConfiguration() {
 	management->SetMinEyeDistance(25);
 	management->SetPrecision(600);
 	management->SaveConfigurationFaceModel("detect1.txt");
+	management->SetNameDirectoryWorkTemporal("camera1");
+	management->SetNameDirectoryTraining("train1");
+	management->SaveConfigurationFile("directory1.txt");
 }
 
 void ReadConfiguration() {
-	Management* management = new Management();
-	management->SetNameFileConfigurationFace("detect1.txt");
-	management->SetNameFileConfigurationVideo("video1.txt");
-	cout << management->GetStringJSONVideo() << endl;
-	cout << management->GetStringJSONFaceModel() << endl;
-}
-
-void SetDirectoryWork() {
-	Management* management = new Management();
-	management->SetNameDirectoryWorkTemporal("camera1");
-}
-
-void InitTrain() {
 	Management* management = new Management();
 	auto observerError = management->observableError.map([](Either* either) {
 		return either;
 	});
 
 	auto subscriptionError = observerError.subscribe([](Either* either) {
-		cout << either->GetLabel() << endl;
 		string s = either->GetLabel();
 		const char *cstr = s.c_str();
 		printf("%s \n", cstr);
 
 	});
-	management->SetNameDirectoryTraining("train1");
+	management->LoadConfiguration("directory1.txt");
+	cout << management->GetStringJSONVideo() << endl;
+	cout << management->GetStringJSONFaceModel() << endl;
+	cout << management->GetStringJSONFiles() << endl;
 }
 
+void RunVideo() {
+	Management* management = new Management();
+	auto observerError = management->observableError.map([](Either* either) {
+		return either;
+	});
+
+	auto subscriptionError = observerError.subscribe([](Either* either) {
+		string s = either->GetLabel();
+		const char *cstr = s.c_str();
+		printf("%s \n", cstr);
+
+	});
+	auto frame_input
+		= management->observableFrame.map([](Mat img) {
+		return img;
+	});
+
+	auto subscriptionFrame = frame_input.subscribe([](Mat img) {
+		cv::imshow("video", img);
+	});
+
+	management->LoadConfiguration("directory1.txt");
+	management->RunVideo();
+
+}
 void InitInnovatricsLibrary() {
 	Innovatrics* innovatrics = new Innovatrics();
 	
@@ -65,13 +90,13 @@ int main()
 	//WriteConfiguration();
 	//ReadConfiguration();
 	//SetDirectoryWork();
-	InitTrain();
-	//InitInnovatricsLibrary();
+	//InitTrain();
+	InitInnovatricsLibrary();
+	RunVideo();
 	
-	
-    std::cout << "Verify Work!\n"; 
-	cin.clear();
-	cout << endl << "Press any key to continue...";
-	cin.ignore();
+ //   std::cout << "Verify Work!\n"; 
+	//cin.clear();
+	//cout << endl << "Press any key to continue...";
+	//cin.ignore();
 
 }

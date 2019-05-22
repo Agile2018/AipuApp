@@ -31,8 +31,11 @@ public:
 	int GetDeviceId();
 	string GetURLVideo();
 	bool BuildPathVideo();
-	ErrorAipuLib* error = new ErrorAipuLib();
+	Rx::subject<Either*> errorSubject;
+	Rx::observable<Either*> observableError = errorSubject.get_observable();
 private:
+	ErrorAipuLib* error = new ErrorAipuLib();
+	Rx::subscriber<Either*> shootError = errorSubject.get_subscriber();
 	const string PATH = "path";
 	const string PASSWORD = "password";
 	const string USER = "user";
@@ -57,6 +60,7 @@ private:
 	string BuildUniformResourceLocator(string address);
 	bool IsLocalDevice(string device);
 	bool HasProtocol(string address);
+	void ObserverError();
 };
 
 

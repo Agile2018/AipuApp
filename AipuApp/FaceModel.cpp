@@ -2,11 +2,33 @@
 
 FaceModel::FaceModel()
 {
+	ObserverError();
 }
 
 FaceModel::~FaceModel()
 {
 	Terminate();
+}
+
+void FaceModel::ObserverError() {
+	auto observerError = error->observableError.map([](Either* either) {
+		return either;
+	});
+
+	auto subscriptionError = observerError.subscribe([this](Either* either) {
+		//printf("%s \n", either->GetLabel());
+		shootError.on_next(either);
+	});
+
+	auto observerErrorConfiguration = configuration->observableError.map([](Either* either) {
+		return either;
+	});
+
+	auto subscriptionErrorConfiguration = observerErrorConfiguration.subscribe([this](Either* either) {
+		//printf("%s \n", either->GetLabel());
+		shootError.on_next(either);
+	});
+
 }
 
 void FaceModel::Terminate() {

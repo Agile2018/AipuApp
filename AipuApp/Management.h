@@ -6,35 +6,41 @@
 #include "Train.h"
 #include "Movement.h"
 #include "Video.h"
+#include "ConfigurationFile.h"
+#include <ctime>
 
 const string DIRECTORY_CONFIGURATION = "configuration";
+
+using namespace std;
 
 class Management
 {
 public:
 	Management();
 	~Management();
-	void SetNameFileConfigurationVideo(string name) {
-		video->configuration->SetNameFileConfiguration(name);
-		video->configuration->ParseJSONToObject();
-		faceModel->SetNameFileImage(video->configuration->GetImageTemp());
-	}
 
-	void SetNameFileConfigurationFace(string name) {
-		faceModel->configuration->SetNameFileConfiguration(name);
-		faceModel->configuration->ParseJSONToObject();
+	void LoadConfiguration(string nameFile) {
+		configurationFile->SetNameFileConfiguration(nameFile);
+		configurationFile->ParseJSONToObject();
+		SetNameFileConfigurationVideo(configurationFile->GetNameFileConfigurationVideo());
+		SetNameFileConfigurationFace(configurationFile->GetNameFileConfigurationFaceModel());
+		video->SetNameDirectory(configurationFile->GetNameDirectoryTempWork());
+		faceModel->SetNameDirectory(configurationFile->GetNameDirectoryTempWork());
+		train->CreateTrainingDirectory(configurationFile->GetNameDirectoryTraining());
+		flowTrend->SetDirectory(configurationFile->GetNameDirectoryTraining());
+
 	}
 
 	void SetNameDirectoryWorkTemporal(string name) {
-		video->SetNameDirectory(name);
-		faceModel->SetNameDirectory(name);
+		configurationFile->SetNameDirectoryTempWork(name);
+
 	}
 
 	void SetNameDirectoryTraining(string name) {		
-		train->CreateTrainingDirectory(name);
-		flowTrend->SetDirectory(name);
-		flowTrend->Init();
+		configurationFile->SetNameDirectoryTraining(name);
+		//flowTrend->Init();
 	}
+
 	void SetPathVideo(string valuePath) {
 		video->configuration->SetPath(valuePath);
 	}
@@ -57,6 +63,7 @@ public:
 	void SaveConfigurationVideo(string nameFile) {
 		video->configuration->SetNameFileConfiguration(nameFile);
 		video->configuration->ParseMapToJSON();		
+		configurationFile->SetNameFileConfigurationVideo(nameFile);
 	}
 
 	void SetMinEyeDistance(int minDistance) {
@@ -77,6 +84,12 @@ public:
 	void SaveConfigurationFaceModel(string nameFile) {
 		faceModel->configuration->SetNameFileConfiguration(nameFile);
 		faceModel->configuration->ParseMapToJSON();
+		configurationFile->SetNameFileConfigurationFaceModel(nameFile);
+	}
+
+	void SaveConfigurationFile(string nameFile) {
+		configurationFile->SetNameFileConfiguration(nameFile);
+		configurationFile->ParseMapToJSON();
 	}
 
 	string GetStringJSONVideo() {
@@ -86,14 +99,22 @@ public:
 	string GetStringJSONFaceModel() {
 		return faceModel->configuration->GetStringJSON();
 	}
+	string GetStringJSONFiles() {
+		return configurationFile->GetStringJSON();
+	}
 
 	void RunVideo();
 
 	Rx::subject<Either*> errorSubject;
 	Rx::observable<Either*> observableError = errorSubject.get_observable();
 
+	Rx::subject<Mat> frame;
+	Rx::observable<Mat> observableFrame = frame.get_observable();
+
 private:
 	Rx::subscriber<Either*> shootError = errorSubject.get_subscriber();
+	Rx::subscriber<Mat> frameOut = frame.get_subscriber();
+	ConfigurationFile* configurationFile = new ConfigurationFile();
 	FaceModel* faceModel = new FaceModel();
 	Video* video = new Video();
 	FlowTrend* flowTrend = new FlowTrend();
@@ -106,13 +127,28 @@ private:
 	double timeDurationSingleDetection = 0;
 	void SetDirectoryConfiguration();
 	void ObserverError();
-	void SaveDataTraining(int quantityDetected);
+	void SaveDataTraining(int quantityDetected, int day, int hour, int minute);
 	void VerifyTrainingLapse();
 	int SetStateFlow(int minute);
 	void GetModelOneToOne(Mat image);
 	void GetModelsByBatch(Mat image);
 	void ProcessImage(Mat image);
 	void ObserverVideo();
+	void ObserverTemplateImage();
+	void SetNameFileConfigurationVideo(string name) {
+		video->configuration->SetNameFileConfiguration(name);
+		video->configuration->ParseJSONToObject();
+		faceModel->SetNameFileImage(video->configuration->GetImageTemp());
+
+	}
+
+	void SetNameFileConfigurationFace(string name) {
+		faceModel->configuration->SetNameFileConfiguration(name);
+		faceModel->configuration->ParseJSONToObject();
+
+	}
+
+
 };
 
 #endif // !Management_h

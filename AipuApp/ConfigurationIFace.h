@@ -44,8 +44,11 @@ public:
 		return accuracy;
 	}
 
-	ErrorFaceLib* error = new ErrorFaceLib();
+	Rx::subject<Either*> errorSubject;
+	Rx::observable<Either*> observableError = errorSubject.get_observable();
 private:
+	Rx::subscriber<Either*> shootError = errorSubject.get_subscriber();
+	ErrorFaceLib* error = new ErrorFaceLib();
 	int minEyeDistance = MIN_EYE_DISTANCE;
 	int maxEyeDistance = MAX_EYE_DISTANCE;
 	int maxDetect = MAX_DETECT;
@@ -57,8 +60,8 @@ private:
 	const string PRECISION= "accuracy";
 	const string CONFIGURATION = "configuration";
 	const string DETECT_CONFIGURATION = "detect_configuration";
-
 	void SetValueJSONToConfiguration();
+	void ObserverError();
 };
 
 

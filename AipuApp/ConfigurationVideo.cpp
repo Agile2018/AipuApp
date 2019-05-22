@@ -2,10 +2,22 @@
 
 ConfigurationVideo::ConfigurationVideo()
 {
+	ObserverError();
 }
 
 ConfigurationVideo::~ConfigurationVideo()
 {
+}
+
+void ConfigurationVideo::ObserverError() {
+	auto observerError = error->observableError.map([](Either* either) {
+		return either;
+	});
+
+	auto subscriptionError = observerError.subscribe([this](Either* either) {
+		//printf("%s \n", either->GetLabel());
+		shootError.on_next(either);
+	});
 }
 
 void ConfigurationVideo::SetPath(string valuePath) {

@@ -2,10 +2,22 @@
 
 ConfigurationIFace::ConfigurationIFace()
 {
+	ObserverError();
 }
 
 ConfigurationIFace::~ConfigurationIFace()
 {
+}
+
+void ConfigurationIFace::ObserverError() {
+	auto observerError = error->observableError.map([](Either* either) {
+		return either;
+	});
+
+	auto subscriptionError = observerError.subscribe([this](Either* either) {
+		//printf("%s \n", either->GetLabel());
+		shootError.on_next(either);
+	});
 }
 
 void ConfigurationIFace::SetValueJSONToConfiguration() {

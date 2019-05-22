@@ -70,24 +70,24 @@ bool FlowTrend::LoadDataOfFile(string nameFile) {
 		ifstream data(nameFile, std::ifstream::in);
 		if (data.good()) {
 			string row;
-			while (data >> row) {
-				if (!row.empty())
-				{
-					vector<string> pieces;
-					Split(row, ',', pieces);
-					/*stringstream geek(pieces[0]);
-					int x = 0;
-					geek >> x;
-					dayOfDetected.push_back(x);*/
-					stringstream geek1(pieces[0]);
-					int w = 0;
-					geek1 >> w;
-					minuteOfDetected.push_back(w);
-					stringstream geek2(pieces[1]);
-					int z = 0;
-					geek2 >> z;
-					quantityDetected.push_back(z);
-				}
+			while (data >> row && !row.empty()) {
+				//if (!row.empty())
+				//{
+				vector<string> pieces;
+				Split(row, ',', pieces);
+				/*stringstream geek(pieces[0]);
+				int x = 0;
+				geek >> x;
+				dayOfDetected.push_back(x);*/
+				stringstream geek1(pieces[0]);
+				int w = 0;
+				geek1 >> w;
+				minuteOfDetected.push_back(w);
+				stringstream geek2(pieces[1]);
+				int z = 0;
+				geek2 >> z;
+				quantityDetected.push_back(z);
+				//}
 			}
 			data.close();
 			return true;
@@ -137,10 +137,11 @@ void FlowTrend::RefreshData(string nameFile) {
 
 void FlowTrend::UpdateTrendByHour() {
 	
-	std::time_t rawtime = std::time(nullptr);
-	struct tm *timeinfo;
+	std::time_t rawtime = std::time(nullptr);	
+	tm *timeinfo = std::localtime(&rawtime);
+	//struct tm *timeinfo;
 	//tm *ltm = std::localtime(&rawtime);
-	localtime_s(timeinfo, &rawtime);
+	//localtime_s(timeinfo, &rawtime);
 	int hour = timeinfo->tm_hour;
 	int day = timeinfo->tm_wday;
 	
