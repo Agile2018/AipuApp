@@ -23,6 +23,9 @@ void WriteConfiguration() {
 	management->SetMinEyeDistance(25);
 	management->SetPrecision(600);
 	management->SaveConfigurationFaceModel("detect1.txt");
+	management->SetNameDatabase("dbass");
+	management->SetConnectStringDatabase("mongodb://localhost:27017");
+	management->SaveConfigurationDatabase("database1.txt");
 	management->SetNameDirectoryWorkTemporal("camera1");
 	management->SetNameDirectoryTraining("train1");
 	management->SaveConfigurationFile("directory1.txt");
@@ -50,6 +53,9 @@ void WriteConfiguration2() {
 	management->SetMinEyeDistance(25);
 	management->SetPrecision(600);
 	management->SaveConfigurationFaceModel("detect2.txt");
+	management->SetNameDatabase("dbass");
+	management->SetConnectStringDatabase("mongodb://localhost:27017");
+	management->SaveConfigurationDatabase("database2.txt");
 	management->SetNameDirectoryWorkTemporal("camera2");
 	management->SetNameDirectoryTraining("train2");
 	management->SaveConfigurationFile("directory2.txt");

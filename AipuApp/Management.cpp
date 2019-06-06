@@ -18,6 +18,7 @@ void Management::SetDirectoryConfiguration() {
 	faceModel->configuration->SetNameDirectory(DIRECTORY_CONFIGURATION);
 	video->configuration->SetNameDirectory(DIRECTORY_CONFIGURATION);
 	configurationFile->SetNameDirectory(DIRECTORY_CONFIGURATION);
+	database->configuration->SetNameDirectory(DIRECTORY_CONFIGURATION);
 }
 
 void Management::ObserverIdentifyFace() {

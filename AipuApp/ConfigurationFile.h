@@ -45,6 +45,14 @@ public:
 		return nameDirectoryTraining;
 	}
 
+	void SetNameFileConfigurationDatabase(string name) {
+		nameFileConfigurationDatabase = name;
+	}
+
+	string GetNameFileConfigurationDatabase() {
+		return nameFileConfigurationDatabase;
+	}
+
 	Rx::subject<Either*> errorSubject;
 	Rx::observable<Either*> observableError = errorSubject.get_observable();
 
@@ -59,9 +67,11 @@ private:
 	string nameDirectoryTraining;
 	string nameFileConfiguration;
 	string nameDirectoryConfiguration;
+	string nameFileConfigurationDatabase;
 	const string PARAMS = "params";
 	const string FILEVIDEO = "file_video";
 	const string FILEFACE = "file_face";
+	const string FILEDATABASE = "file_database";
 	const string DIRECTORYWORK = "directory_work";
 	const string DIRECTORYTRAIN = "directory_train";
 	const string CONFIGURATION = "configuration";

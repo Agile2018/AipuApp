@@ -164,6 +164,7 @@
   <ItemGroup>
     <ClCompile Include="AipuApp.cpp" />
     <ClCompile Include="Base64.cpp" />
+    <ClCompile Include="ConfigurationDatabase.cpp" />
     <ClCompile Include="ConfigurationFile.cpp" />
     <ClCompile Include="ConfigurationIFace.cpp" />
     <ClCompile Include="ConfigurationVideo.cpp" />
@@ -190,6 +191,7 @@
     <ClInclude Include="Base64.h" />
     <ClInclude Include="Codes.h" />
     <ClInclude Include="Configuration.h" />
+    <ClInclude Include="ConfigurationDatabase.h" />
     <ClInclude Include="ConfigurationFile.h" />
     <ClInclude Include="ConfigurationIFace.h" />
     <ClInclude Include="ConfigurationVideo.h" />

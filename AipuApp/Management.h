@@ -30,9 +30,22 @@ public:
 		faceModel->SetNameDirectory(configurationFile->GetNameDirectoryTempWork());
 		train->CreateTrainingDirectory(configurationFile->GetNameDirectoryTraining());
 		flowTrend->SetDirectory(configurationFile->GetNameDirectoryTraining());
-		database->SetNameDatabase("dbass");
-		database->SetConnection("mongodb://localhost:27017");
+		SetNameFileConfigurationDatabase(configurationFile->GetNameFileConfigurationDatabase());
+		//database->SetNameDatabase("dbass");
+		//database->SetConnection("mongodb://localhost:27017");
 		database->Configure();
+	}
+	void SetNameDatabase(string name) {
+		database->configuration->SetNameDatabase(name);
+	}
+	void SetConnectStringDatabase(string connect) {
+		database->configuration->SetConnectString(connect);
+	}
+
+	void SaveConfigurationDatabase(string nameFile) {
+		database->configuration->SetNameFileConfiguration(nameFile);
+		database->configuration->ParseMapToJSON();
+		configurationFile->SetNameFileConfigurationDatabase(nameFile);
 	}
 
 	void SetNameDirectoryWorkTemporal(string name) {
@@ -161,6 +174,10 @@ private:
 
 	}
 
+	void SetNameFileConfigurationDatabase(string name) {
+		database->configuration->SetNameFileConfiguration(name);
+		database->configuration->ParseJSONToObject();
+	}
 
 };
 

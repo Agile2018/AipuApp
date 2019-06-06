@@ -11,7 +11,7 @@ Database::~Database()
 }
 
 void Database::Configure() {
-	mongocxx::uri uri(stringConnection.c_str()); //"mongodb://localhost:27017"
+	mongocxx::uri uri(configuration->GetConnectString().c_str()); //"mongodb://localhost:27017"
 	class NoopLogger : public mongocxx::logger {
 	public:
 		virtual void operator()(mongocxx::log_level,
@@ -46,7 +46,7 @@ void Database::AddRecordsUser(User* user) {
 void Database::AddUser(User* user) {
 	
 	auto clientConnection = MongoAccess::instance().GetConnection();
-	mongocxx::database database = (*clientConnection)[nameDatabase.c_str()];
+	mongocxx::database database = (*clientConnection)[configuration->GetNameDatabase().c_str()];
 	
 	mongocxx::collection collection = database[COLLECTION_USER.c_str()];
 	
@@ -73,7 +73,7 @@ void Database::AddUser(User* user) {
 
 void Database::AddImageUser(string pathImage, int idUser) {
 	auto clientConnection = MongoAccess::instance().GetConnection();
-	mongocxx::database database = (*clientConnection)[nameDatabase.c_str()];	
+	mongocxx::database database = (*clientConnection)[configuration->GetNameDatabase().c_str()];
 	mongocxx::collection collection = database[COLLECTION_IMAGE.c_str()];
 	
 	string imageBase64 = FileImageToStringBase64(pathImage);	
@@ -147,6 +147,15 @@ void Database::ObserverError() {
 	auto subscriptionErrorDatabase = observerErrorDatabase.subscribe([this](Either* either) {
 		shootError.on_next(either);
 	});
+	auto observerConfiguration = configuration->observableError.map([](Either* either) {
+		return either;
+	});
+
+	auto subscriptionConfiguration = observerConfiguration.subscribe([this](Either* either) {
+		shootError.on_next(either);
+	});
+
+
 
 }
 
@@ -158,7 +167,7 @@ void Database::QueryUserByFace(int idFaceUser) {
 	if (lastUserId != idFaceUser)
 	{
 		auto clientConnection = MongoAccess::instance().GetConnection();
-		mongocxx::database database = (*clientConnection)[nameDatabase.c_str()];
+		mongocxx::database database = (*clientConnection)[configuration->GetNameDatabase().c_str()];
 		mongocxx::collection collection = database[COLLECTION_USER.c_str()];
 		lastUserId = idFaceUser;	
 		boost::optional<bsoncxx::v_noabi::document::value> cursor = collection
@@ -206,7 +215,7 @@ void Database::BuildJSONUser(vector<std::string> values) {
 
 string Database::QueryImageOfUser(int idFaceUser) {
 	auto clientConnection = MongoAccess::instance().GetConnection();
-	mongocxx::database database = (*clientConnection)[nameDatabase.c_str()];
+	mongocxx::database database = (*clientConnection)[configuration->GetNameDatabase().c_str()];
 	mongocxx::collection collection = database[COLLECTION_IMAGE.c_str()];
 	boost::optional<bsoncxx::v_noabi::document::value> cursor = collection
 		.find_one(make_document(kvp("id_face", idFaceUser)));

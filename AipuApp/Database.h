@@ -15,6 +15,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <vector>
 #include <json\json.h>
+#include "ConfigurationDatabase.h"
 
 using namespace cv;
 using namespace std;
@@ -28,17 +29,18 @@ class Database
 public:
 	Database();
 	~Database();
-	void SetNameDatabase(string name) {
+	/*void SetNameDatabase(string name) {
 		nameDatabase = name;
 	}
 
 	void SetConnection(string connect) {
 		stringConnection = connect;
-	}
+	}*/
 
 	void Configure();
 	void InsertNewUser(User* user);	
 	void FindUserByIdFace(int idFaceUser);
+	ConfigurationDatabase* configuration = new ConfigurationDatabase();
 	Rx::subject<Either*> errorSubject;
 	Rx::observable<Either*> observableError = errorSubject.get_observable();
 	Rx::subject<string> userSubject;
@@ -58,8 +60,8 @@ private:
 	const string PARAMS = "params";
 	const string DATASOURCE = "MongoDB";
 	int lastUserId = 0;
-	string nameDatabase;
-	string stringConnection;
+	/*string nameDatabase;
+	string stringConnection;*/
 	Rx::subscriber<Either*> shootError = errorSubject.get_subscriber();
 	Rx::subscriber<string> shootUserJSON = userSubject.get_subscriber();
 	ErrorAipuLib* error = new ErrorAipuLib();
