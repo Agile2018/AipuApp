@@ -145,7 +145,7 @@
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile />
-      <AdditionalIncludeDirectories>C:\Users\david\Downloads\cuda-samples-master\Common;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include;C:\opencv\build\include;C:\Program Files\Innovatrics\IFace SDK\include;C:\Eigen;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\mongo-c-driver\include\libmongoc-1.0;C:\mongo-c-driver\include\libbson-1.0;C:\mongo-cxx-driver\install\include\bsoncxx\v_noabi;C:\mongo-cxx-driver\install\include\mongocxx\v_noabi;C:\boost_1_67_0;C:\Program Files\Innovatrics\IDKit SDK\include;C:\Users\david\Downloads\cuda-samples-master\Common;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include;C:\opencv\build\include;C:\Program Files\Innovatrics\IFace SDK\include;C:\Eigen;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <CompileAsManaged>false</CompileAsManaged>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -157,51 +157,62 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <AdditionalLibraryDirectories>C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\lib\x64;C:\opencv\build\x64\vc15\lib;C:\Program Files\Innovatrics\IFace SDK\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>iface.lib;opencv_world400.lib;cudart_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\mongo-cxx-driver\install\lib;C:\Program Files\Innovatrics\IDKit SDK\lib;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\lib\x64;C:\opencv\build\x64\vc15\lib;C:\Program Files\Innovatrics\IFace SDK\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>iface.lib;opencv_world400.lib;cudart_static.lib;idkit.lib;bsoncxx.lib;mongocxx.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AipuApp.cpp" />
+    <ClCompile Include="Base64.cpp" />
     <ClCompile Include="ConfigurationFile.cpp" />
     <ClCompile Include="ConfigurationIFace.cpp" />
     <ClCompile Include="ConfigurationVideo.cpp" />
+    <ClCompile Include="Database.cpp" />
     <ClCompile Include="Either.cpp" />
     <ClCompile Include="ErrorAipuLib.cpp" />
     <ClCompile Include="ErrorFaceLib.cpp" />
+    <ClCompile Include="ErrorIdKitLib.cpp" />
     <ClCompile Include="FaceModel.cpp" />
     <ClCompile Include="File.cpp" />
     <ClCompile Include="FlowTrend.cpp" />
     <ClCompile Include="Format.cpp" />
     <ClCompile Include="GraphicProcessor.cpp" />
+    <ClCompile Include="Identify.cpp" />
     <ClCompile Include="Innovatrics.cpp" />
     <ClCompile Include="Management.cpp" />
     <ClCompile Include="Molded.cpp" />
     <ClCompile Include="Movement.cpp" />
     <ClCompile Include="Train.cpp" />
+    <ClCompile Include="User.cpp" />
     <ClCompile Include="Video.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Base64.h" />
     <ClInclude Include="Codes.h" />
     <ClInclude Include="Configuration.h" />
     <ClInclude Include="ConfigurationFile.h" />
     <ClInclude Include="ConfigurationIFace.h" />
     <ClInclude Include="ConfigurationVideo.h" />
+    <ClInclude Include="Database.h" />
     <ClInclude Include="Either.h" />
     <ClInclude Include="EnumError.h" />
     <ClInclude Include="ErrorAipuLib.h" />
     <ClInclude Include="ErrorFaceLib.h" />
+    <ClInclude Include="ErrorIdKitLib.h" />
     <ClInclude Include="FaceModel.h" />
     <ClInclude Include="File.h" />
     <ClInclude Include="FlowTrend.h" />
     <ClInclude Include="Format.h" />
     <ClInclude Include="GraphicProcessor.h" />
+    <ClInclude Include="Identify.h" />
     <ClInclude Include="Innovatrics.h" />
     <ClInclude Include="LabelError.h" />
     <ClInclude Include="Management.h" />
     <ClInclude Include="Molded.h" />
+    <ClInclude Include="MongoAccess.h" />
     <ClInclude Include="Movement.h" />
     <ClInclude Include="Train.h" />
+    <ClInclude Include="User.h" />
     <ClInclude Include="Video.h" />
   </ItemGroup>
   <ItemGroup>

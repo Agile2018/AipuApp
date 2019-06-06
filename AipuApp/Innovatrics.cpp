@@ -24,11 +24,15 @@ void Innovatrics::InitLibrary() {
 	int errorCode;
 
 	errorCode = IFACE_Init();
-	if (errorCode != IFACE_OK) {
-		cout << errorCode << endl;
+	if (errorCode != IFACE_OK) {		
 		error->CheckError(errorCode, error->gross);
 	}	
 
+	//errorCode = IEngine_InitModule();
+	//if (errorCode != IENGINE_E_NOERROR) {
+	//	//error->CheckError(errorCode, error->gross);
+	//	cout << "Error IENGINE" << endl;
+	//}
 }
 
 bool Innovatrics::InitParamsGraphicProcessor() {

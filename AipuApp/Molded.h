@@ -1,6 +1,10 @@
 #ifndef Molded_h
 #define Molded_h
 
+#include <iostream>
+
+using namespace std;
+
 class Molded
 {
 public:
@@ -22,9 +26,18 @@ public:
 		return moldSize;
 	}
 
+	void SetPathImage(string path) {
+		pathImage = path;
+	}
+
+	string GetPathImage() {
+		return pathImage;
+	}
+
 private:
 	char* moldImage;
 	int moldSize;
+	string pathImage;
 };
 
 

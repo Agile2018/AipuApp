@@ -3,6 +3,7 @@
 
 #include "ErrorFaceLib.h"
 #include "iface.h"
+#include "idkit.h"
 
 class Innovatrics
 {
@@ -14,8 +15,10 @@ public:
 		isGraphicProcessor = processor;
 	}
 	void SetParamsLibrary();
+	
 	Rx::subject<Either*> errorSubject;
 	Rx::observable<Either*> observableError = errorSubject.get_observable();	
+
 private:
 	Rx::subscriber<Either*> shootError = errorSubject.get_subscriber();
 	ErrorFaceLib* error = new ErrorFaceLib();

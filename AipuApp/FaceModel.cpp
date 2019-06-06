@@ -76,9 +76,22 @@ int FaceModel::DetectByBatch(void* facesDetected[BATCH_SIZE]) {
 
 			if (detectedFaces != EMPTY_FACE)
 			{
-				errorCode = IFACE_CloneEntity(faceTemp, facesDetected[countFacesDetected]);
+				float rightEyeX, rightEyeY, leftEyeX, leftEyeY;
+				float faceConfidence;
+				errorCode = IFACE_GetFaceBasicInfo(faceTemp, faceHandler,
+					&rightEyeX, &rightEyeY, &leftEyeX, &leftEyeY, &faceConfidence);
 				error->CheckError(errorCode, error->medium);
-				countFacesDetected++;
+				
+				if (faceConfidence > configuration->GetPrecision())
+				{
+					errorCode = IFACE_CloneEntity(faceTemp, facesDetected[countFacesDetected]);
+					error->CheckError(errorCode, error->medium);
+					string pathImage = nameDirectory + "/" + to_string(countFacesDetected) + nameFileCropImage;
+					std::thread(&FaceModel::FaceCropImage, this, 
+						facesDetected[countFacesDetected], pathImage).detach();
+					countFacesDetected++;
+				}
+				
 			}
 			errorCode = IFACE_ReleaseEntity(faceTemp);
 			error->CheckError(errorCode, error->medium);
@@ -94,6 +107,32 @@ int FaceModel::DetectByBatch(void* facesDetected[BATCH_SIZE]) {
 	error->CheckError(errorCode, error->medium);
 
 	return countFacesDetected;
+}
+
+void FaceModel::FaceCropImage(void* face, string pathImage) {
+	int cropWidth, cropHeight, cropLength, errorCode;
+	void* faceHandler;
+
+	errorCode = IFACE_CreateFaceHandler(&faceHandler);
+	error->CheckError(errorCode, error->medium);
+
+
+	errorCode = IFACE_GetFaceCropImage(face, faceHandler, IFACE_FACE_CROP_METHOD_FULL_FRONTAL, 
+		&cropWidth, &cropHeight, &cropLength, NULL);
+	error->CheckError(errorCode, error->medium);
+	unsigned char* cropImageData = new unsigned char[cropLength];
+	errorCode = IFACE_GetFaceCropImage(face, faceHandler, IFACE_FACE_CROP_METHOD_FULL_FRONTAL, 
+		&cropWidth, &cropHeight, &cropLength, cropImageData);
+	error->CheckError(errorCode, error->medium);
+		
+	if (errorCode == IFACE_OK) {
+		errorCode = IFACE_SaveImage(pathImage.c_str(), cropWidth, cropHeight, 3, cropImageData);
+	}
+	error->CheckError(errorCode, error->medium);
+			
+	errorCode = IFACE_ReleaseEntity(faceHandler);
+	error->CheckError(errorCode, error->medium);
+	delete[] cropImageData;
 }
 
 int FaceModel::ModelByBatch() {
@@ -121,40 +160,78 @@ int FaceModel::ModelByBatch() {
 void FaceModel::GetBatchModels(int countFacesDetected, void* facesDetected[BATCH_SIZE]) {
 	int errorCode;
 	int templateBatchDataSize;
-
-	char** batchTemplates = new char*[BATCH_SIZE];
+	void** cloneFacesDetected = new void*[countFacesDetected];
+	char** batchTemplates = new char*[countFacesDetected];
 	void* faceHandler;
 
 	errorCode = IFACE_CreateFaceHandler(&faceHandler);
 	error->CheckError(errorCode, error->medium);
 
-	errorCode = IFACE_CreateTemplateBatch(faceHandler, BATCH_SIZE, facesDetected,
+	for (int i = 0; i < countFacesDetected; i++)
+	{
+		errorCode = IFACE_CreateFace(&(cloneFacesDetected[i]));
+		error->CheckError(errorCode, error->medium);
+	}
+
+	for (int i = 0; i < countFacesDetected; i++)
+	{
+		errorCode = IFACE_CloneEntity(facesDetected[i], cloneFacesDetected[i]);
+		error->CheckError(errorCode, error->medium);
+	}
+
+	errorCode = IFACE_CreateTemplateBatch(faceHandler, countFacesDetected, cloneFacesDetected,
 		&templateBatchDataSize, NULL);
 	error->CheckError(errorCode, error->medium);
 
-	for (int i = 0; i < BATCH_SIZE; ++i)
+	for (int i = 0; i < countFacesDetected; ++i)
 	{
 
 		batchTemplates[i] = new char[templateBatchDataSize];
 	}
 
-	errorCode = IFACE_CreateTemplateBatch(faceHandler, BATCH_SIZE, facesDetected,
+	errorCode = IFACE_CreateTemplateBatch(faceHandler, countFacesDetected, cloneFacesDetected,
 		&templateBatchDataSize, batchTemplates);
 
 	error->CheckError(errorCode, error->medium);
-
+	//vector<Molded*> modelList;
 	for (int i = 0; i < countFacesDetected; i++)
 	{
+		string pathImage = nameDirectory + "/" + to_string(countFacesDetected) + nameFileCropImage;
 		Molded* model = new Molded();
 		model->SetMoldImage(batchTemplates[i]);
 		model->SetMoldSize(templateBatchDataSize);
+		model->SetPathImage(pathImage);
 		templateOut.on_next(model);
+		//int majorVersion, minorVersion, quality;
+		//errorCode = IFACE_GetTemplateInfo(faceHandler, batchTemplates[i], &majorVersion, &minorVersion, &quality);
+		//error->CheckError(errorCode, error->medium);
+		//
+		//if (majorVersion != 0 && minorVersion > 0)
+		//{
+		//	cout << "Major: " << majorVersion << ", Minor: " << minorVersion << ", Quality:" << quality << endl;
+		//	Molded* model = new Molded();
+		//	model->SetMoldImage(batchTemplates[i]);
+		//	model->SetMoldSize(templateBatchDataSize);
+		//	//modelList.push_back(model);
+		//	templateOut.on_next(model);
+		//}
 	}
 
-	for (int i = 0; i < BATCH_SIZE; ++i)
+	/*if (!modelList.empty())
+	{
+		modelListOut.on_next(modelList);
+	}*/
+
+	for (int i = 0; i < countFacesDetected; ++i)
 	{
 		delete batchTemplates[i];
 	}
+	for (int i = 0; i < countFacesDetected; i++)
+	{
+		errorCode = IFACE_ReleaseEntity(cloneFacesDetected[i]);
+		error->CheckError(errorCode, error->medium);
+	}
+
 	errorCode = IFACE_ReleaseEntity(faceHandler);
 	error->CheckError(errorCode, error->medium);
 }
@@ -201,9 +278,11 @@ void FaceModel::CreateTemplate(void* face) {
 		}
 		else
 		{
+			string pathImage = nameDirectory + "/" + nameFileCropImage;
 			Molded* model = new Molded();
 			model->SetMoldImage(templateData);
 			model->SetMoldSize(templateSize);
+			model->SetPathImage(pathImage);
 			templateOut.on_next(model);
 		}
 		delete[] templateData;
@@ -233,7 +312,20 @@ int FaceModel::GetOneModel(unsigned char* rawImage, int width, int height) {
 	if (errorCode == IFACE_OK) {
 		if (detectedFaces != EMPTY_FACE)
 		{
-			CreateTemplate(faceTemp);
+			float rightEyeX, rightEyeY, leftEyeX, leftEyeY;
+			float faceConfidence;
+			errorCode = IFACE_GetFaceBasicInfo(faceTemp, faceHandler,
+				&rightEyeX, &rightEyeY, &leftEyeX, &leftEyeY, &faceConfidence);
+			error->CheckError(errorCode, error->medium);
+			cout << "CONFIDENCE: " << faceConfidence << endl;
+			if (faceConfidence > configuration->GetPrecision())
+			{
+				string pathImage = nameDirectory + "/" + nameFileCropImage;
+				std::thread(&FaceModel::FaceCropImage, this,
+					faceTemp, pathImage).detach();
+				CreateTemplate(faceTemp);
+			}
+			
 		}
 	}
 	else {

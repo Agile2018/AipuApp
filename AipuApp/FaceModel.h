@@ -32,7 +32,10 @@ public:
 	Rx::observable<Molded*> observableTemplate = templateImage.get_observable();
 	Rx::subject<Either*> errorSubject;
 	Rx::observable<Either*> observableError = errorSubject.get_observable();
+	/*Rx::subject<vector<Molded*>> modelList;
+	Rx::observable<vector<Molded*>> observableModelList = modelList.get_observable();*/
 private:
+	const string nameFileCropImage = "imgCrop.png";
 	ErrorFaceLib* error = new ErrorFaceLib();
 	Rx::subscriber<Either*> shootError = errorSubject.get_subscriber();
 	int batchTotalSize = BATCH_TOTAL_SIZE;
@@ -40,6 +43,8 @@ private:
 	string nameFileImage;
 	string nameDirectory;
 	Rx::subscriber<Molded*> templateOut = templateImage.get_subscriber();
+	void FaceCropImage(void* face, string pathImage);
+	//Rx::subscriber<vector<Molded*>> modelListOut = modelList.get_subscriber();
 	int DetectByBatch(void* facesDetected[BATCH_SIZE]);
 	void GetBatchModels(int countFacesDetected, void* facesDetected[BATCH_SIZE]);
 	void CreateTemplate(void* face);

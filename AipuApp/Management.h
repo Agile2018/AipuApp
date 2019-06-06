@@ -7,7 +7,9 @@
 #include "Movement.h"
 #include "Video.h"
 #include "ConfigurationFile.h"
+#include "Identify.h"
 #include <ctime>
+#include "Database.h"
 
 const string DIRECTORY_CONFIGURATION = "configuration";
 
@@ -28,7 +30,9 @@ public:
 		faceModel->SetNameDirectory(configurationFile->GetNameDirectoryTempWork());
 		train->CreateTrainingDirectory(configurationFile->GetNameDirectoryTraining());
 		flowTrend->SetDirectory(configurationFile->GetNameDirectoryTraining());
-
+		database->SetNameDatabase("dbass");
+		database->SetConnection("mongodb://localhost:27017");
+		database->Configure();
 	}
 
 	void SetNameDirectoryWorkTemporal(string name) {
@@ -111,15 +115,22 @@ public:
 	Rx::subject<Mat> frame;
 	Rx::observable<Mat> observableFrame = frame.get_observable();
 
+	Rx::subject<string> userDetected;
+	Rx::observable<string> observableUserJSON = userDetected.get_observable();
+
+
 private:
 	Rx::subscriber<Either*> shootError = errorSubject.get_subscriber();
 	Rx::subscriber<Mat> frameOut = frame.get_subscriber();
+	Rx::subscriber<string> shootUserJSON = userDetected.get_subscriber();
 	ConfigurationFile* configurationFile = new ConfigurationFile();
 	FaceModel* faceModel = new FaceModel();
 	Video* video = new Video();
 	FlowTrend* flowTrend = new FlowTrend();
 	Train* train = new Train();
 	Movement* movement = new Movement();
+	Identify* identify = new Identify();
+	Database* database = new Database();
 	std::chrono::steady_clock::time_point startCountTime = std::chrono::steady_clock::now();
 	int countImagesDetected = 0;
 	int workMode = SINGLE;
@@ -135,6 +146,8 @@ private:
 	void ProcessImage(Mat image);
 	void ObserverVideo();
 	void ObserverTemplateImage();
+	void ObserverIdentifyFace();
+	void ObserverDatabase();
 	void SetNameFileConfigurationVideo(string name) {
 		video->configuration->SetNameFileConfiguration(name);
 		video->configuration->ParseJSONToObject();

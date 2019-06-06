@@ -6,6 +6,8 @@ Management::Management()
 	ObserverError();
 	ObserverVideo();	
 	ObserverTemplateImage();
+	ObserverIdentifyFace();
+	ObserverDatabase();
 }
 
 Management::~Management()
@@ -18,6 +20,38 @@ void Management::SetDirectoryConfiguration() {
 	configurationFile->SetNameDirectory(DIRECTORY_CONFIGURATION);
 }
 
+void Management::ObserverIdentifyFace() {
+	auto identifyUser = identify->observableUser.map([](User* user) {
+		return user;
+	});
+
+	auto subscriptionIdentifyUser = identifyUser.subscribe([this](User* user) {
+		
+		if (user->GetIsNew())
+		{			
+			user->SetNameUser("David");
+			user->SetAddressUser("Puerto Rico Guilarte");
+			database->InsertNewUser(user);
+		}
+		else {
+			database->FindUserByIdFace(user->GetUserIdIFace());
+		}
+		
+	});
+
+}
+
+void Management::ObserverDatabase() {
+	auto databaseObservable = database->observableUserJSON.map([](string jsonUser) {
+		return jsonUser;
+	});
+
+	auto subscriptionDatabase = databaseObservable.subscribe([this](string jsonUser) {
+		shootUserJSON.on_next(jsonUser);
+	});
+
+}
+
 void Management::ObserverTemplateImage()
 {
 	auto templateObservable = faceModel->observableTemplate.map([](Molded* modelImage) {
@@ -25,9 +59,21 @@ void Management::ObserverTemplateImage()
 	});
 
 	auto subscriptionTemplate = templateObservable.subscribe([this](Molded* modelImage) {
-		//std::thread(&ASSCentralProcessingVideo::Identify, this, modelImage).detach();
-
+		identify->EnrollUser(modelImage);
 	});
+
+	//auto modelListObservable = faceModel->observableModelList.map([](vector<Molded*> list) {
+	//	return list;
+	//});
+
+	//auto subscriptionModelList = modelListObservable.subscribe([this](vector<Molded*> list) {
+	//	//std::thread(&ASSCentralProcessingVideo::Identify, this, modelImage).detach();	
+	//	cout << list.size() << endl;
+	//	for (int i = 0; i < list.size(); i++) {
+	//		identify->EnrollUser(list[i]);			
+	//	}		
+
+	//});
 }
 
 void Management::ObserverError() {
@@ -68,6 +114,21 @@ void Management::ObserverError() {
 		shootError.on_next(either);
 	});
 
+	auto identifyError = identify->observableError.map([](Either* either) {
+		return either;
+	});
+
+	auto subscriptionIdentifyError = identifyError.subscribe([this](Either* either) {
+		shootError.on_next(either);
+	});
+
+	auto databaseError = database->observableError.map([](Either* either) {
+		return either;
+	});
+
+	auto subscriptionDatabaseError = databaseError.subscribe([this](Either* either) {
+		shootError.on_next(either);
+	});
 }
 
 void Management::SaveDataTraining(int quantityDetected, int day, int hour, int minute) {	
@@ -107,7 +168,7 @@ int Management::SetStateFlow(int minute) {
 	if (timeDurationSingleDetection != 0.0)
 	{
 		int imagesWait = static_cast<int>((SIXTY_SECONDS / timeDurationSingleDetection) / 2);
-
+		
 		if (valueTrend > imagesWait)
 		{
 
@@ -203,6 +264,7 @@ void Management::ObserverVideo() {
 }
 
 void Management::RunVideo() {
+	//identify->LoadConnection();
 	flowTrend->Init();
 	video->RunVideo();
 }

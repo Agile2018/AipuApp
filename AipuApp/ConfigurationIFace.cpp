@@ -60,12 +60,14 @@ void ConfigurationIFace::ParseMapToJSON() {
 	jsonBody.clear();
 	jsonParams.clear();
 	std::map<std::string, std::int16_t> params;
+
 	params.insert(std::pair<std::string, std::int16_t>(MAXFACES, maxDetect));
 	params.insert(std::pair<std::string, std::int16_t>(MINEYE, minEyeDistance));
 	params.insert(std::pair<std::string, std::int16_t>(MAXEYE, maxEyeDistance));
 	params.insert(std::pair<std::string, std::int16_t>(PRECISION, accuracy));
 	std::map<std::string, std::int16_t>::const_iterator it = params.begin(),
 		end = params.end();
+	
 	for (; it != end; ++it) {
 		jsonParams[it->first] = it->second;
 
