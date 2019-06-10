@@ -84,6 +84,7 @@ void RunVideo1() {
 		return either;
 	});
 
+
 	auto subscriptionError = observerError.subscribe([](Either* either) {
 		string s = either->GetLabel();
 		const char *cstr = s.c_str();
